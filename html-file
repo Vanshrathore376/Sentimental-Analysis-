@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sentiment Analysis</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        body {
+            height: 100vh;
+            background: linear-gradient(135deg, #f6d365, #fda085, #fbc2eb, #a6c1ee);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 50px 40px;
+            border-radius: 25px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.2);
+            width: 100%;
+            max-width: 550px;
+            text-align: center;
+            animation: slideUp 1s ease-out;
+        }
+
+        @keyframes slideUp {
+            0% { transform: translateY(50px); opacity: 0; }
+            100% { transform: translateY(0); opacity: 1; }
+        }
+
+        h1 {
+            font-size: 36px;
+            background: linear-gradient(90deg, #ff8a00, #e52e71);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 30px;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 20px;
+            border-radius: 20px;
+            border: 2px solid #ff8a00;
+            font-size: 18px;
+            resize: none;
+            height: 140px;
+            margin-bottom: 25px;
+            transition: border 0.3s ease;
+        }
+
+        textarea:focus {
+            border: 2px solid #e52e71;
+            outline: none;
+        }
+
+        button {
+            background: linear-gradient(135deg, #ff8a00, #e52e71);
+            color: #fff;
+            border: none;
+            padding: 18px 40px;
+            font-size: 18px;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+        }
+
+        button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 12px 25px rgba(0,0,0,0.3);
+        }
+
+        .result {
+            margin-top: 30px;
+            font-size: 22px;
+            font-weight: 700;
+            padding: 15px;
+            border-radius: 20px;
+            transition: all 0.5s ease;
+        }
+
+        .positive {
+            background: linear-gradient(135deg, #56ab2f, #a8e063);
+            color: #fff;
+        }
+
+        .negative {
+            background: linear-gradient(135deg, #e52e71, #ff8a00);
+            color: #fff;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 40px 20px;
+            }
+
+            textarea {
+                height: 120px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Sentiment Analysis</h1>
+        <textarea id="review" placeholder="Type your review here..."></textarea>
+        <br>
+        <button onclick="predictSentiment()">Analyze</button>
+        <div class="result" id="result"></div>
+    </div>
+
+    <script>
+        function preprocessText(text) {
+            return text.toLowerCase().replace(/[^\w\s]/g, '');
+        }
+
+        function predictSentiment() {
+            const review = document.getElementById('review').value.trim();
+            const resultDiv = document.getElementById('result');
+
+            if (!review) {
+                resultDiv.innerHTML = "Please enter a review!";
+                resultDiv.className = "result";
+                return;
+            }
+
+            const negativeWords = ["hate", "worst", "bad", "terrible", "disappointing"];
+            let sentiment = "Positive";
+            let sentimentClass = "positive";
+
+            negativeWords.forEach(word => {
+                if (preprocessText(review).includes(word)) {
+                    sentiment = "Negative";
+                    sentimentClass = "negative";
+                }
+            });
+
+            resultDiv.innerHTML = `Sentiment: ${sentiment}`;
+            resultDiv.className = `result ${sentimentClass}`;
+        }
+    </script>
+</body>
+</html>
