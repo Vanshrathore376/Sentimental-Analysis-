@@ -1,0 +1,66 @@
+import pickle
+import os
+import sys
+
+# ------------------------------
+# Load model and vectorizer
+# ------------------------------
+project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+model_folder = os.path.join(project_root, "model")
+
+model_path = os.path.join(model_folder, "sentiment_model_nb.pkl")
+vectorizer_path = os.path.join(model_folder, "vectorizer.pkl")
+
+# Load model
+try:
+    with open(model_path, "rb") as f:
+        model = pickle.load(f)
+except FileNotFoundError:
+    print(f"Error: Model file not found at {model_path}")
+    sys.exit(1)
+
+# Load vectorizer
+try:
+    with open(vectorizer_path, "rb") as f:
+        vectorizer = pickle.load(f)
+except FileNotFoundError:
+    print(f"Error: Vectorizer file not found at {vectorizer_path}")
+    sys.exit(1)
+
+# ------------------------------
+# Prediction function
+# ------------------------------
+def preprocess_text(text):
+    """Lowercase and remove punctuation to match training preprocessing"""
+    text = text.lower()
+    import re
+    text = re.sub(r'[^\w\s]', '', text)
+    return text
+
+def predict_sentiment(text):
+    """
+    Predict sentiment of a single string or a list of strings.
+    Returns a single prediction for one string, or a list for multiple.
+    """
+    if isinstance(text, str):
+        texts = [preprocess_text(text)]
+    else:
+        texts = [preprocess_text(t) for t in text]
+
+    transformed = vectorizer.transform(texts)
+    prediction = model.predict(transformed)
+    return prediction[0] if len(prediction) == 1 else prediction
+
+# ------------------------------
+# Example usage
+# ------------------------------
+if __name__ == "__main__":
+    examples = [
+        "I love this product",
+        "I hate this thing",
+        ["I am very happy with it", "Worst experience ever"]
+    ]
+
+    print("Naive Bayes Predictions:")
+    for i, ex in enumerate(examples, 1):
+        print(f"Example {i}:", predict_sentiment(ex))
